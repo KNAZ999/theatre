@@ -1,8 +1,15 @@
-from django.views.generic import DetailView
-from plays.models import Show
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .forms import ShowForm
 
 
-class ShowDetailView(DetailView):
-    model = Show
-    template_name = 'plays/show_detail.html'
-    context_object_name = 'object'  # ← важно: в шаблоне вы используете {{ object }}
+@login_required
+def create_show(request):
+    if request.method == 'POST':
+        form = ShowForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('homepage:homepage')
+    else:
+        form = ShowForm()
+    return render(request, 'plays/create_show.html', {'form': form})

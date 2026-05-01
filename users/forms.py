@@ -6,4 +6,4 @@ from users.models import User
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username',)  # добавьте email, если есть
+        fields = ('username',)

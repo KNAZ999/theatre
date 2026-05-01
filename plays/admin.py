@@ -1,24 +1,30 @@
 from django.contrib import admin
-from django.contrib.admin import ModelAdmin
+from .models import Play, Actor, Show, Booking
 
-from plays.models import Play, Actor, Show
 
-class ShowAdminInline(admin.StackedInline):
-    model = Show
-    extra = 0
-
+@admin.register(Play)
 class PlayAdmin(admin.ModelAdmin):
-    list_display = ("title",)
-    inlines = [ShowAdminInline]
-
-class ShowAdmin (admin.ModelAdmin):
-    list_display = ("play_name", "starts_at",)
+    list_display = ('title',)
 
 
-# Register your models here.
-
-admin.site.register(Play,PlayAdmin)
-admin.site.register(Actor,admin.ModelAdmin)
-admin.site.register(Show,ShowAdmin)
+@admin.register(Actor)
+class ActorAdmin(admin.ModelAdmin):
+    list_display = ('name', 'birthday')
 
 
+@admin.register(Show)
+class ShowAdmin(admin.ModelAdmin):
+    list_display = ('play_name', 'starts_at')
+    filter_horizontal = ('actors',)
+    search_fields = ('play__title',)
+
+    @admin.display(description='Спектакль')
+    def play_name(self, obj):
+        return obj.play.title
+
+
+@admin.register(Booking)
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ['show', 'seats', 'owner', 'created_at']
+    list_filter = ['show', 'owner']
+    search_fields = ['owner__username', 'show__play__title']
